@@ -1,12 +1,13 @@
 from rest_framework.viewsets import ModelViewSet
 from .serializers import (
     Inventory, InventorySerializer, InventoryGroupSerializer, InventoryGroup,
-    Shop, ShopSerializer
+    Shop, ShopSerializer, InvoiceSerializer, Invoice
 )
 from rest_framework.response import Response
 from inventory_api.custom_methods import IsAuthenticatedCustom
 from inventory_api.utils import get_query, CustomPagination
 from django.db.models import Count
+from user_control.views import add_user_activity
 
 
 class InventoryView(ModelViewSet):
@@ -92,6 +93,37 @@ class ShopView(ModelViewSet):
         if keyword:
             search_fields = (
                 "name", "created_by__fullname", "updated_by__email",
+            )
+            query = get_query(keyword, search_fields)
+            results = results.filter(query)
+        
+        return results   
+    
+    def create(self, request, *args, **kwargs):
+        request.data.update({"created_by_id": request.user.id})
+        return super().create(request, *args, **kwargs)
+    
+    
+class InvoiceView(ModelViewSet):
+    queryset = Invoice.objects.select_related(
+    "shop", "created_by").prefetch_related("invoice_items")
+    serializer_class = InvoiceSerializer
+    permission_classes = (IsAuthenticatedCustom, )
+    pagination_class = CustomPagination
+    
+    def get_queryset(self):
+        if self.request.method.lower() != "get":
+            return self.queryset
+        
+        data = self.request.query_params.dict()
+        data.pop("page")
+        keyword = data.pop("keyword", None)
+        
+        results = self.queryset(**data)
+        
+        if keyword:
+            search_fields = (
+                "shop__name", "created_by__fullname", "updated_by__email",
             )
             query = get_query(keyword, search_fields)
             results = results.filter(query)
