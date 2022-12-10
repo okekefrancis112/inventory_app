@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'user_control',  
     'app_control',
-    'app_control'
 ]
 
 MIDDLEWARE = [
