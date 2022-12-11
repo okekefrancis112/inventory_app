@@ -30,6 +30,10 @@ ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = "user_control.CustomUser"
 
+REST_FRAMEWORK = {
+    "EXCEPTION_HANDLER": "inventory_api.custom_methods.custom_exception_handler",
+}
+
 
 # Application definition
 
@@ -40,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'user_control',  
     'app_control',
@@ -48,12 +53,15 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOWED_ALL_ORIGINS: True
 
 ROOT_URLCONF = 'inventory_api.urls'
 
