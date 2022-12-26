@@ -142,7 +142,7 @@ class Invoice(models.Model):
         super().save(*args, **kwargs)
         add_user_activity(self.created_by, action=action)    
             
-    def delete(self, *args, **kwargs):
+    def delete(self, *args, **kwargs):   
         created_by = self.created_by
         action = f"deleted invoice - '{self.id}'"
         super().delete(*args, **kwargs)

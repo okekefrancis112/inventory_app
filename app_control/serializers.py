@@ -8,7 +8,7 @@ class InventoryGroupSerializer(serializers.ModelSerializer):
     created_by_id = serializers.CharField(write_only=True, required=False)
     belongs_to = serializers.SerializerMethodField(read_only=True)
     belongs_to_id = serializers.CharField(write_only=True)
-    total_items = serializers.CharField(read_only=True, required=False)
+    total_items = serializers.CharField(read_only=True, required=False)  
     
     class Meta:
         model = InventoryGroup

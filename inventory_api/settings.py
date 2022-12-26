@@ -32,6 +32,7 @@ AUTH_USER_MODEL = "user_control.CustomUser"
 
 REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "inventory_api.custom_methods.custom_exception_handler",
+    "DEFAULT_SCHEMA_CLASS": 'drf_spectacular.openapi.AutoSchema',
 }
 
 
@@ -46,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    'user_control',  
+    'drf-spectacular',
+    'user_control',
     'app_control',
 ]
 

@@ -9,12 +9,14 @@ class IsAuthenticatedCustom(BasePermission):
     def has_permission(self, request, _):
         try:
             auth_token = request.META.get("HTTP_AUTHORIZATION", None)
+            print(auth_token)
         except Exception:
             return False
         if not auth_token:
             return False
 
         user = decodeJWT(auth_token)
+        # print(user)
 
         if not user:
             return False

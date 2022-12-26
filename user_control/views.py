@@ -39,21 +39,21 @@ class CreateUserView(ModelViewSet):
         )
   
 class LoginView(ModelViewSet):
-    http_method_names = ['post']
+    http_method_names = ["post"]
     queryset = CustomUser.objects.all()
     serializer_class = LoginSerializer
-    
+
     def create(self, request):
         valid_request = self.serializer_class(data=request.data)
         valid_request.is_valid(raise_exception=True)
-        
+
         new_user = valid_request.validated_data["is_new_user"]
-        
+
         if new_user:
             user = CustomUser.objects.filter(
                 email=valid_request.validated_data["email"]
             )
-            
+
             if user:
                 user = user[0]
                 if not user.password:
@@ -62,25 +62,25 @@ class LoginView(ModelViewSet):
                     raise Exception("User has password already")
             else:
                 raise Exception("User with email not found")
-        
+
         user = authenticate(
-            username =valid_request.validated_data["email"],
-            password =valid_request.validated_data.get("password", None)
+            username=valid_request.validated_data["email"],
+            password=valid_request.validated_data.get("password", None)
         )
-        
+
         if not user:
             return Response(
-                {"error": "Invalid username or password"},
+                {"error": "Invalid email or password"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-            
+
         access = get_access_token({"user_id": user.id}, 1)
-        
+
         user.last_login = datetime.now()
         user.save()
-        
+
         add_user_activity(user, "logged in")
-        
+
         return Response({"access": access})
     
 class UpdatePasswordView(ModelViewSet):
@@ -147,11 +147,12 @@ class UserActivitiesView(ModelViewSet):
         return results
     
 class UsersView(ModelViewSet):
-    http_method_names = ['GET']
+    http_method_names = ['get']  
     # queryset = CustomUser.objects.prefetch_related("user_activities")
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
     permission_classes = (IsAuthenticatedCustom, )
+    pagination_class = CustomPagination
     
     def get_queryset(self):
         if self.request.method.lower() != "get":
@@ -172,3 +173,8 @@ class UsersView(ModelViewSet):
         
         return results
     
+    #     "user_id": 7
+    
+    # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzA4OTQ3NTYsInVzZXJfaWQiOjd9.u2swEBasbm0h4XVpSc83zmgS1Y970tHVq9P3-wkhzk0
+    
+    # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzA4OTE2OTksInVzZXJfaWQiOjZ9.pNasPhn7RVik-rfSnrDDNQSQ7AquWfQSjOaTKIt3r2c

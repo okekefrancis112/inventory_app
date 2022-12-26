@@ -19,7 +19,7 @@ class InventoryView(ModelViewSet):
     queryset = Inventory.objects.select_related("group", "created_by")
     serializer_class = InventorySerializer
     permission_classes = (IsAuthenticatedCustom, )
-    pagination_class = CustomPagination
+    pagination_class = CustomPagination   
     
     def create(self, request, *args, **kwargs):
         request.data.update({"created_by_id": request.user.id})
